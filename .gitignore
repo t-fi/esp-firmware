@@ -1,2 +1,3 @@
 # ignore ssid and key file
+/.idea/*
 ssidfile.fb5
