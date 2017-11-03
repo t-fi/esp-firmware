@@ -4,6 +4,8 @@
 #include <ArduinoJson.h>
 #include <FS.h>
 
+enum componentType { none, dht, relay, ledStrip };
+
 typedef struct WifiCredentials {
     char* ssid;
     char* password;
@@ -58,7 +60,7 @@ JsonObject& parseJson(String jsonString) {
 WifiCredentials* getWifiCredentials() {
     WifiCredentials* credentials = (WifiCredentials*) malloc(sizeof(WifiCredentials));
 
-    JsonObject &json = getFileAsJson("/wifiCred");
+    JsonObject &json = getFileAsJson("/wifiCredentials.json");
     String ssid = json["ssid"];
     String password = json["password"];
 
@@ -122,7 +124,8 @@ void setupAccessPoint(){
         Serial.println("Ready");
         server.begin();
     } else {
-        Serial.println("Failed!");
+        Serial.println("Failed! Restarting Esp ...");
+        restart();
     }
 }
 
@@ -161,7 +164,7 @@ void formatFileSystem(){
 }
 
 void configureWifi(JsonObject& json) {
-    File f = SPIFFS.open("/wifiCred", "w");
+    File f = SPIFFS.open("/wifiCredentials.json", "w");
     if (f) {
         char buffer[256];
         json.printTo(buffer, sizeof(buffer));
@@ -207,7 +210,6 @@ bool isLedStrip(int componentId) {
 
     if (isConnected(componentId)) {
         // TODO: Use config to check if the device is of correct type to perform action
-
     }
 
     return isLedStrip;
@@ -234,7 +236,7 @@ void setFade(int componentId) {
 void configureEsp(JsonObject& json) {
     File f = SPIFFS.open("/config.json", "w");
     if (f) {
-        // buffer of 4096 crashes esp
+        // buffer of 4096 crashes esp01
         char buffer[2048];
         json.printTo(buffer, sizeof(buffer));
         f.print(buffer);
