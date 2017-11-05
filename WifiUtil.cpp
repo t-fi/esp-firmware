@@ -6,41 +6,45 @@
 #include "JsonUtil.h"
 #include "EspUtil.h"
 
-void setupWifi() {
-    WifiCredentials* credentials = getWifiCredentials();
-    connectToWifi(credentials);
-    free(credentials);
+String WifiUtil::getSsid()
+{
 }
 
-WifiCredentials* getWifiCredentials() {
-    WifiCredentials* credentials = (WifiCredentials*) malloc(sizeof(WifiCredentials));
-
-    JsonObject &json = getFileAsJson("/wifiCredentials.json");
-    String ssid = json["ssid"];
-    String password = json["password"];
-
-    char* ssid_char = (char*) malloc(32 * sizeof(char));
-    char* password_char = (char*) malloc(64 * sizeof(char));
-
-    ssid.toCharArray(ssid_char, 32);
-    password.toCharArray(password_char, 64);
-
-    credentials->ssid = ssid_char;
-    credentials->password = password_char;
-
-    return credentials;
+String WifiUtil::getPassword()
+{
 }
 
-void connectToWifi(WifiCredentials* credentials) {
-    Serial.printf("Connecting to %s ", credentials->ssid);
-    WiFi.begin(credentials->ssid, credentials->password);
+void WifiUtil::setup()
+{
+    getCredentials();
+    connect();
+}
+
+void WifiUtil::getCredentials()
+{
+    JsonObject& json = JsonUtil::parseFile("/wifiCredentials.json");
+    String ssidString = json["ssid"];
+    String passwordString = json["password"];
+    ssid = ssidString;
+    password = passwordString;
+}
+
+void WifiUtil::connect()
+{
+    char ssidArr[128];
+    char passwordArr[128];
+    ssid.toCharArray(ssidArr, 128);
+    password.toCharArray(passwordArr, 128);
+
+    Serial.printf("Connecting to %s ", ssidArr);
+    WiFi.begin(ssidArr, passwordArr);
     int c = 0;
     while (WiFi.status() != WL_CONNECTED && c < 40) {
         delay(500);
         c++;
         Serial.print(".");
 
-        if (c == 40){
+        if (c == 40) {
             setupAccessPoint();
         }
     }
@@ -53,25 +57,22 @@ void connectToWifi(WifiCredentials* credentials) {
     }
 }
 
-void setupAccessPoint() {
+void WifiUtil::setupAccessPoint()
+{
     WiFi.mode(WIFI_AP);
     Serial.print("Setting soft-AP ... ");
 
     if (WiFi.softAP("ESPsoftAP_01", "12345678")) {
         Serial.println("Ready");
-    } else {
+    }
+    else {
         Serial.println("Failed! Restarting Esp ...");
-        restart();
+        EspUtil::restart();
     }
 }
 
-void configureWifi(JsonObject& json) {
-    File f = SPIFFS.open("/wifiCredentials.json", "w");
-    if (f) {
-        char buffer[256];
-        json.printTo(buffer, sizeof(buffer));
-        f.print(buffer);
-        f.close();
-        Serial.println("Successfully updated Wifi credentials.");
-    }
+void WifiUtil::updateCredentials(String newSsid, String newPassword)
+{
+    ssid = newSsid;
+    password = newPassword;
 }

@@ -2,8 +2,10 @@
 #include <FS.h>
 
 #include "EspUtil.h"
+#include "JsonUtil.h"
 
-void updateFirmware(String path) {
+void EspUtil::updateEsp(String path)
+{
     Serial.println(path);
     if (path != "") {
         for (int i = 0; i < 10; ++i) {
@@ -20,12 +22,14 @@ void updateFirmware(String path) {
     }
 }
 
-void restart() {
+void EspUtil::restart()
+{
     delay(100);
     ESP.restart();
 }
 
-void configureEsp(JsonObject& json) {
+void EspUtil::updateConfig(JsonObject& json)
+{
     File f = SPIFFS.open("/config.json", "w");
     if (f) {
         // buffer of 4096 crashes esp01
@@ -35,4 +39,19 @@ void configureEsp(JsonObject& json) {
         f.close();
         Serial.println("Successfully updated config.");
     }
+}
+
+bool EspUtil::isConnected(int componentId)
+{
+    bool isConnected = false;
+    JsonObject& config = JsonUtil::parseFile("/config.json");
+    JsonArray& components = config["esp"]["components"];
+
+    for (auto component : components) {
+        if (componentId == component["componentId"].as<int>()) {
+            isConnected = true;
+        }
+    }
+
+    return isConnected;
 }

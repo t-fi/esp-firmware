@@ -1,20 +1,25 @@
 #ifndef WIFI_H
 #define WIFI_H
 
+#include <Arduino.h>
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 
-typedef struct WifiCredentials {
-    char* ssid;
-    char* password;
-} WifiCredentials;
+class WifiUtil {
+public:
+    String getSsid();
+    String getPassword();
 
-void setupWifi();
-WifiCredentials* getWifiCredentials();
-void connectToWifi(WifiCredentials* credentials);
-void setupAccessPoint();
-void configureWifi(JsonObject& json);
+    void setup();
+    void getCredentials();
+    void connect();
+    void setupAccessPoint();
+    void updateCredentials(String newSsid, String newPassword);
+
+private:
+    String ssid;
+    String password;
+};
 
 #endif // WIFI_H
-
 

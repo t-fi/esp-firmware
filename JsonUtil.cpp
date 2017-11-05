@@ -1,7 +1,8 @@
 #include "JsonUtil.h"
-#include "FilesystemUtil.h"
+#include "FileSystemUtil.h"
 
-JsonObject& parseJson(String jsonString) {
+JsonObject& JsonUtil::parse(String jsonString)
+{
     DynamicJsonBuffer JSONBuffer;
     JsonObject& parsed = JSONBuffer.parseObject(jsonString);
 
@@ -13,9 +14,18 @@ JsonObject& parseJson(String jsonString) {
     return parsed;
 }
 
-JsonObject& getFileAsJson(String filePath) {
-    String configString = readFile(filePath);
-    JsonObject& json = parseJson(configString);
+JsonObject& JsonUtil::parseFile(String filePath)
+{
+    String configString = FileSystemUtil::read(filePath);
+    JsonObject& json = parse(configString);
 
     return json;
 }
+
+void JsonUtil::save(String path, JsonObject& json)
+{
+    char buffer[2048];
+    json.printTo(buffer, sizeof(buffer));
+    FileSystemUtil::write(path, buffer);
+}
+

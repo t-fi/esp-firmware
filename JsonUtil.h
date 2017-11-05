@@ -3,9 +3,15 @@
 
 #include <ArduinoJson.h>
 
-JsonObject& parseJson(String jsonString);
-JsonObject& getFileAsJson(String filePath);
+class JsonUtil {
+public:
+    static JsonObject& parse(String jsonString);
+    static JsonObject& parseFile(String filePath);
+    static void save(String path, JsonObject& json);
+
+private:
+    JsonUtil() {}
+};
 
 #endif // JSON_H
-
 
