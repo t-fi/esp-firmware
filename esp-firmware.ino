@@ -1,15 +1,15 @@
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
 #include <ESP8266WiFi.h>
-#include <ArduinoJson.h>
 #include <FS.h>
 
-enum componentType { none, dht, relay, ledStrip };
+#include "Enums.h"
+#include "WifiUtil.h"
+#include "JsonUtil.h"
+#include "FilesystemUtil.h"
+#include "EspUtil.h"
 
-typedef struct WifiCredentials {
-    char* ssid;
-    char* password;
-} WifiCredentials;
+WiFiServer server(420);
 
 typedef struct LedColor {
     int red;
@@ -18,131 +18,12 @@ typedef struct LedColor {
     int warmWhite;
 } LedColor;
 
-WiFiServer server(420);
-
-String readFile(String name) {
-    String data = "";
-    File f = SPIFFS.open(name, "r");
-    if (f) {
-        data = f.readStringUntil(EOF);
-        f.close();
-    }
-
-    return data;
-}
-
-void setupWifi() {
-    WifiCredentials* credentials = getWifiCredentials();
-    connectToWifi(credentials);
-    free(credentials);
-}
-
 void setup() {
     Serial.begin(9600);
     delay(100);
-    startSpiffs();
-    // loadConfiguration();
-    setupWifi();
-}
-
-JsonObject& parseJson(String jsonString) {
-    DynamicJsonBuffer JSONBuffer;
-    JsonObject& parsed = JSONBuffer.parseObject(jsonString);
-
-    if (!parsed.success()) {
-        const int BUFFER_SIZE = JSON_OBJECT_SIZE(0);
-        StaticJsonBuffer<BUFFER_SIZE> jsonBuffer;
-        return JSONBuffer.parseObject("{}");
-    }
-    return parsed;
-}
-
-WifiCredentials* getWifiCredentials() {
-    WifiCredentials* credentials = (WifiCredentials*) malloc(sizeof(WifiCredentials));
-
-    JsonObject &json = getFileAsJson("/wifiCredentials.json");
-    String ssid = json["ssid"];
-    String password = json["password"];
-
-    char* ssid_char = (char*) malloc(32 * sizeof(char));
-    char* password_char = (char*) malloc(64 * sizeof(char));
-
-    ssid.toCharArray(ssid_char, 32);
-    password.toCharArray(password_char, 64);
-
-    credentials->ssid = ssid_char;
-    credentials->password = password_char;
-
-    return credentials;
-}
-
-void connectToWifi(WifiCredentials* credentials) {
-    Serial.printf("Connecting to %s ", credentials->ssid);
-    WiFi.begin(credentials->ssid, credentials->password);
-    int c = 0;
-    while (WiFi.status() != WL_CONNECTED && c < 40) {
-        delay(500);
-        c++;
-        Serial.print(".");
-
-        if (c == 40){
-            setupAccessPoint();
-        }
-    }
-
-    if (WiFi.status() == WL_CONNECTED) {
-        Serial.println("");
-        Serial.println("WiFi connected");
-        Serial.println("IP address: ");
-        Serial.println(WiFi.localIP());
-        server.begin();
-    }
-}
-
-void updateFirmware(String path){
-    Serial.println(path);
-    if (path != "") {
-        for (int i = 0; i < 10; ++i) {
-            Serial.println("Fetching firmware...");
-            int result = ESPhttpUpdate.update(path);
-            Serial.println(result);
-            Serial.println(ESPhttpUpdate.getLastError());
-
-            if (result == 2) {
-                delay(100);
-                ESP.restart();
-            }
-        }
-    }
-}
-
-void setupAccessPoint(){
-    WiFi.mode(WIFI_AP);
-    Serial.print("Setting soft-AP ... ");
-
-    if(WiFi.softAP("ESPsoftAP_01", "12345678")) {
-        Serial.println("Ready");
-        server.begin();
-    } else {
-        Serial.println("Failed! Restarting Esp ...");
-        restart();
-    }
-}
-
-void startSpiffs(){
     SPIFFS.begin();
-}
-
-JsonObject& getFileAsJson(String filePath) {
-    String configString = readFile(filePath);
-    JsonObject& json = parseJson(configString);
-
-    return json;
-}
-
-void restart(){
-    delay(100);
-    ESP.restart();
+    setupWifi();
+    server.begin();
 }
 
 String getTcpMessage() {
@@ -156,22 +37,6 @@ String getTcpMessage() {
     Serial.println(message);
     client.stop();
     return message;
-}
-
-void formatFileSystem(){
-    SPIFFS.format();
-    SPIFFS.begin();
-}
-
-void configureWifi(JsonObject& json) {
-    File f = SPIFFS.open("/wifiCredentials.json", "w");
-    if (f) {
-        char buffer[256];
-        json.printTo(buffer, sizeof(buffer));
-        f.print(buffer);
-        f.close();
-        Serial.println("Successfully updated Wifi credentials.");
-    }
 }
 
 void parseFlashCommand(JsonObject& json) {
@@ -230,18 +95,6 @@ void setColor(int componentId, LedColor* ledColor) {
 void setFade(int componentId) {
     if (isLedStrip(componentId)) {
         // TODO: Set a fade
-    }
-}
-
-void configureEsp(JsonObject& json) {
-    File f = SPIFFS.open("/config.json", "w");
-    if (f) {
-        // buffer of 4096 crashes esp01
-        char buffer[2048];
-        json.printTo(buffer, sizeof(buffer));
-        f.print(buffer);
-        f.close();
-        Serial.println("Successfully updated config.");
     }
 }
 
