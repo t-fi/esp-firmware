@@ -48,14 +48,21 @@ void WifiUtil::connect()
         Serial.print(".");
         
         if (c == 40) {
-            Serial.println();
-            setupAccessPoint();
+            if (EspUtil::getRestartCount() == 5) {
+                Serial.println();
+                setupAccessPoint();  
+            } else {
+                EspUtil::setRestartCount(EspUtil::getRestartCount() + 1);
+                EspUtil::restart();
+            }
         }
     }
 
     if (WiFi.status() == WL_CONNECTED) {
         printStatus();
     }
+
+    EspUtil::setRestartCount(0);
 }
 
 void WifiUtil::setupAccessPoint()

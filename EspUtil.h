@@ -10,7 +10,8 @@ public:
     static void restart();
     static void updateConfig(JsonObject& json);
     bool isConnected(int componentId);
-    int getResetCount();
+    static int getRestartCount();
+    static void setRestartCount(int restartCount);    
 };
 
 #endif // ESPUTIL_H

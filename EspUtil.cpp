@@ -3,6 +3,7 @@
 
 #include "EspUtil.h"
 #include "JsonUtil.h"
+#include "FileSystemUtil.h"
 
 void EspUtil::updateEsp(String path)
 {
@@ -56,9 +57,18 @@ bool EspUtil::isConnected(int componentId)
     return isConnected;
 }
 
-int EspUtil::getResetCount() 
+int EspUtil::getRestartCount() 
 {
-    //char* resetCount = FileSystemUtil::read("/resetCount");
-    //atoi(resetCount);
+    char buffer[8];
+    String restartCount = FileSystemUtil::read("/restartCount");
+    restartCount.toCharArray(buffer, 8);
+
+    return atoi(buffer);
+}
+
+void EspUtil::setRestartCount(int restartCount)
+{
+    String restartCountString = String(restartCount);
+    FileSystemUtil::write("/restartCount", restartCountString);
 }
 
