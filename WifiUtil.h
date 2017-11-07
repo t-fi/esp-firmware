@@ -19,6 +19,7 @@ public:
 private:
     String ssid;
     String password;
+    void printStatus();
 };
 
 #endif // WIFI_H

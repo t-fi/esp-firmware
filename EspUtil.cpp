@@ -55,3 +55,10 @@ bool EspUtil::isConnected(int componentId)
 
     return isConnected;
 }
+
+int EspUtil::getResetCount() 
+{
+    //char* resetCount = FileSystemUtil::read("/resetCount");
+    //atoi(resetCount);
+}
+

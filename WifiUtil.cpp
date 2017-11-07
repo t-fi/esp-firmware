@@ -8,10 +8,12 @@
 
 String WifiUtil::getSsid()
 {
+    return ssid;
 }
 
 String WifiUtil::getPassword()
 {
+    return password;
 }
 
 void WifiUtil::setup()
@@ -33,37 +35,36 @@ void WifiUtil::connect()
 {
     char ssidArr[128];
     char passwordArr[128];
-    ssid.toCharArray(ssidArr, 128);
-    password.toCharArray(passwordArr, 128);
+    getSsid().toCharArray(ssidArr, 128);
+    getPassword().toCharArray(passwordArr, 128);
 
-    Serial.printf("Connecting to %s ", ssidArr);
+    Serial.printf("Connecting to \"%s\" ", ssidArr);
+    Serial.printf("using password: \"%s\"\n", passwordArr);
     WiFi.begin(ssidArr, passwordArr);
     int c = 0;
     while (WiFi.status() != WL_CONNECTED && c < 40) {
         delay(500);
         c++;
         Serial.print(".");
-
+        
         if (c == 40) {
+            Serial.println();
             setupAccessPoint();
         }
     }
 
     if (WiFi.status() == WL_CONNECTED) {
-        Serial.println("");
-        Serial.println("WiFi connected");
-        Serial.println("IP address: ");
-        Serial.println(WiFi.localIP());
+        printStatus();
     }
 }
 
 void WifiUtil::setupAccessPoint()
 {
     WiFi.mode(WIFI_AP);
-    Serial.print("Setting soft-AP ... ");
+    Serial.print("Setting up soft-AP ... ");
 
     if (WiFi.softAP("ESPsoftAP_01", "12345678")) {
-        Serial.println("Ready");
+        Serial.println("Done.");
     }
     else {
         Serial.println("Failed! Restarting Esp ...");
@@ -76,3 +77,12 @@ void WifiUtil::updateCredentials(String newSsid, String newPassword)
     ssid = newSsid;
     password = newPassword;
 }
+
+void WifiUtil::printStatus() 
+{
+    Serial.println("");
+    Serial.println("WiFi connected");
+    Serial.println("IP address: ");
+    Serial.println(WiFi.localIP());
+}
+
