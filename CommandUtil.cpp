@@ -3,17 +3,6 @@
 #include "EspUtil.h"
 #include "WifiUtil.h"
 
-FlashCommand::FlashCommand(String url)
-{
-    this->url = url;
-}
-
-ConfigureWifiCommand::ConfigureWifiCommand(String ssid, String password)
-{
-    this->ssid = ssid;
-    this->password = password;
-}
-
 CommandUtil::CommandUtil(WifiUtil wifi) {
     this->wifi = &wifi;
 }
@@ -35,7 +24,7 @@ void CommandUtil::handle(ConfigureWifiCommand command)
     JsonUtil::save("/wifiCredentials.json", json);
 }
 
-void CommandUtil::handle(SetColorCommand command) 
+void CommandUtil::handle(SetColorCommand command)
 {
     //int componentId = json["componentId"].as<int>();
     //if (json.containsKey("fade")) {
@@ -69,4 +58,3 @@ void CommandUtil::parse(JsonObject& json)
         //parseSetColorCommand(json["setColor"]);
     }
 }
-

@@ -2,25 +2,10 @@
 #define COMMANDUTIL_H
 
 #include <Arduino.h>
-
 #include "WifiUtil.h"
-
-class SetColorCommand {
-  
-};
-
-class FlashCommand {
-public:
-    FlashCommand(String url);
-    String url;
-};
-
-class ConfigureWifiCommand {
-public:
-    ConfigureWifiCommand(String ssid, String password);
-    String ssid;
-    String password;
-};
+#include "FlashCommand.h"
+#include "ConfigureWifiCommand.h"
+#include "SetColorCommand.h"
 
 class CommandUtil {
 public:
@@ -34,4 +19,3 @@ private:
 };
 
 #endif // COMMANDUTIL_H
-

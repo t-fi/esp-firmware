@@ -9,9 +9,10 @@ public:
     static void updateEsp(String path);
     static void restart();
     static void updateConfig(JsonObject& json);
-    bool isConnected(int componentId);
     static int getRestartCount();
-    static void setRestartCount(int restartCount);    
+    static void setRestartCount(int restartCount);
+       
+    bool isConnected(int componentId); 
 };
 
 #endif // ESPUTIL_H
