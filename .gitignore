@@ -1,5 +1,6 @@
 # ignore ssid and key file
 /.idea/*
+/data/*
 .pioenvs
 .piolibdeps
 .clang_complete
