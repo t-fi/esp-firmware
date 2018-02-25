@@ -6,10 +6,9 @@ String ServerUtil::receive(WiFiServer& server)
     if (!client)
         return "";
     Serial.println("A client connected");
-    String message = client.readStringUntil('\n');
+    String message = client.readStringUntil('\r');
     Serial.println(message);
     client.stop();
-    
+
     return message;
 }
-

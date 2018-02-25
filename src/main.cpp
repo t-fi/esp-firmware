@@ -2,6 +2,7 @@
 #include <ESP8266httpUpdate.h>
 #include <ESP8266WiFi.h>
 #include <FS.h>
+#include <Wire.h>
 
 #include "Enums.h"
 #include "WifiUtil.h"
@@ -22,12 +23,14 @@ void setup()
     SPIFFS.begin();
     wifi.setup();
     server.begin();
+    // Wire.begin(2, 7);
+    // Wire.setClock(400000);
 }
 
 void handleEcho(String message)
 {
-    if (message == "new") {
-        Serial.println("4Real! 00ld firmware!");
+    if (message == "new")  {
+        Serial.println("thisistherealshit!");
     }
     if (message.substring(0, 6) == "update") {
         Serial.println("Updating..");

@@ -9,9 +9,7 @@ CommandUtil::CommandUtil(WifiUtil wifi) {
 
 void CommandUtil::handle(FlashCommand command)
 {
-    if (command.url == "http://192.168.0.119:80/arduino.bong") {
-        EspUtil::updateEsp(command.url);
-    }
+    EspUtil::updateEsp(command.url);
 }
 
 void CommandUtil::handle(ConfigureWifiCommand command)
@@ -52,9 +50,27 @@ void CommandUtil::parse(JsonObject& json)
         handle(command);
     }
     else if (json.containsKey("toggle")) {
+        Serial.println(json["toggle"]["id"].as<int>());
         //toggle(json["toggle"]["componentId"].as<int>());
     }
     else if (json.containsKey("setColor")) {
-        //parseSetColorCommand(json["setColor"]);
+        word pwms[16];
+        for (int i = 0; i < 16; ++i) {
+            switch (i % 4) {
+                case 0:
+                    pwms[i] = json["setColor"]["red"].as<int>();
+                    break;
+                case 1:
+                    pwms[i] = json["setColor"]["green"].as<int>();
+                    break;
+                case 2:
+                    pwms[i] = json["setColor"]["blue"].as<int>();
+                    break;
+                case 3:
+                    pwms[i] = json["setColor"]["warmWhite"].as<int>();
+                    break;
+            }
+        }
+
     }
 }

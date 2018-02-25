@@ -1,4 +1,6 @@
 # ignore ssid and key file
-/data/*
 /.idea/*
-ssidfile.fb5
+.pioenvs
+.piolibdeps
+.clang_complete
+.gcc-flags.json
