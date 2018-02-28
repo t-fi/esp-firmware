@@ -1,4 +1,3 @@
-# ignore ssid and key file
 /.idea/*
 /data/*
 platformio.ini
