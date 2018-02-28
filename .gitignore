@@ -1,6 +1,5 @@
 /.idea/*
 /data/*
-platformio.ini
 .pioenvs
 .piolibdeps
 .clang_complete
