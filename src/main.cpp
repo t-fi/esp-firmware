@@ -32,17 +32,6 @@ void handleEcho(String message)
     if (message == "new")  {
         Serial.println("thisistherealshit!");
     }
-    if (message.substring(0, 6) == "update") {
-        Serial.println("Updating..");
-        Serial.println(message.substring(6));
-        String path = "";
-        path += message.substring(6);
-        //path = "http://192.168.0.119:80/arduino.bin";
-        Serial.println(path);
-        int result = ESPhttpUpdate.update(path);
-        Serial.println(result);
-        Serial.println(ESPhttpUpdate.getLastError());
-    }
     if (message == "reset") {
         EspUtil::restart();
     }
@@ -50,10 +39,10 @@ void handleEcho(String message)
         FileSystemUtil::format();
     }
     if (message == "read") {
-        Serial.print("ssid: ");
-        Serial.println(wifi.getSsid());
-        Serial.print("key: ");
-        Serial.println(wifi.getPassword());
+        // Serial.print("ssid: ");
+        // Serial.println(wifi.getSsid());
+        // Serial.print("key: ");
+        // Serial.println(wifi.getPassword());
     }
     if (message == "readConfig") {
         String config = FileSystemUtil::read("/config.json");

@@ -3,8 +3,8 @@
 #include "EspUtil.h"
 #include "WifiUtil.h"
 
-CommandUtil::CommandUtil(WifiUtil wifi) {
-    this->wifi = &wifi;
+CommandUtil::CommandUtil(WifiUtil& wifi) {
+    this->wifi = wifi;
 }
 
 void CommandUtil::handle(FlashCommand command)
@@ -14,12 +14,12 @@ void CommandUtil::handle(FlashCommand command)
 
 void CommandUtil::handle(ConfigureWifiCommand command)
 {
-    wifi->updateCredentials(command.ssid, command.password);
     DynamicJsonBuffer buffer;
     JsonObject& json = buffer.createObject();
     json["ssid"] = command.ssid;
     json["password"] = command.password;
     JsonUtil::save("/wifiCredentials.json", json);
+    this->wifi.updateCredentials(command.ssid, command.password);
 }
 
 void CommandUtil::handle(SetColorCommand command)

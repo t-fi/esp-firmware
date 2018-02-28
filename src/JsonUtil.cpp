@@ -11,6 +11,7 @@ JsonObject& JsonUtil::parse(String jsonString)
         StaticJsonBuffer<BUFFER_SIZE> jsonBuffer;
         return JSONBuffer.parseObject("{}");
     }
+    
     return parsed;
 }
 
@@ -24,8 +25,7 @@ JsonObject& JsonUtil::parseFile(String filePath)
 
 void JsonUtil::save(String path, JsonObject& json)
 {
-    char buffer[2048];
-    json.printTo(buffer, sizeof(buffer));
-    FileSystemUtil::write(path, buffer);
+    String jsonString;
+    json.printTo(jsonString);
+    FileSystemUtil::write(path, jsonString);
 }
-
