@@ -46,11 +46,11 @@ void WifiUtil::connect()
         delay(500);
         c++;
         Serial.print(".");
-        
+
         if (c == 40) {
             if (EspUtil::getRestartCount() == 5) {
                 Serial.println();
-                setupAccessPoint();  
+                setupAccessPoint();
             } else {
                 EspUtil::setRestartCount(EspUtil::getRestartCount() + 1);
                 EspUtil::restart();
@@ -60,9 +60,9 @@ void WifiUtil::connect()
 
     if (WiFi.status() == WL_CONNECTED) {
         printStatus();
+    } else {
+        EspUtil::setRestartCount(0);
     }
-
-    EspUtil::setRestartCount(0);
 }
 
 void WifiUtil::setupAccessPoint()
@@ -85,11 +85,10 @@ void WifiUtil::updateCredentials(String newSsid, String newPassword)
     password = newPassword;
 }
 
-void WifiUtil::printStatus() 
+void WifiUtil::printStatus()
 {
     Serial.println("");
     Serial.println("WiFi connected");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
 }
-
