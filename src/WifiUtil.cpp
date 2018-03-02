@@ -38,18 +38,18 @@ void WifiUtil::connect()
     getSsid().toCharArray(ssidArr, 128);
     getPassword().toCharArray(passwordArr, 128);
 
-    Serial.printf("Connecting to \"%s\" ", ssidArr);
-    Serial.printf("using password: \"%s\"\n", passwordArr);
+    // Serial.printf("Connecting to \"%s\" ", ssidArr);
+    // Serial.printf("using password: \"%s\"\n", passwordArr);
     WiFi.begin(ssidArr, passwordArr);
     int c = 0;
     while (WiFi.status() != WL_CONNECTED && c < 40) {
         delay(500);
         c++;
-        Serial.print(".");
+        // Serial.print(".");
 
         if (c == 40) {
             if (EspUtil::getRestartCount() == 5) {
-                Serial.println();
+                // Serial.println();
                 setupAccessPoint();
             } else {
                 EspUtil::setRestartCount(EspUtil::getRestartCount() + 1);
@@ -68,13 +68,13 @@ void WifiUtil::connect()
 void WifiUtil::setupAccessPoint()
 {
     WiFi.mode(WIFI_AP);
-    Serial.print("Setting up soft-AP ... ");
+    // Serial.print("Setting up soft-AP ... ");
 
     if (WiFi.softAP("ESPsoftAP_01", "12345678")) {
-        Serial.println("Done.");
+        // Serial.println("Done.");
     }
     else {
-        Serial.println("Failed! Restarting Esp ...");
+        // Serial.println("Failed! Restarting Esp ...");
         EspUtil::restart();
     }
 }
@@ -87,8 +87,8 @@ void WifiUtil::updateCredentials(String newSsid, String newPassword)
 
 void WifiUtil::printStatus()
 {
-    Serial.println("");
-    Serial.println("WiFi connected");
-    Serial.println("IP address: ");
+    // Serial.println("");
+    // Serial.println("WiFi connected");
+    // Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
 }

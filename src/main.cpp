@@ -11,6 +11,7 @@
 #include "EspUtil.h"
 #include "ServerUtil.h"
 #include "CommandUtil.h"
+#include "LedDriverRev1.h"
 
 WifiUtil wifi;
 CommandUtil command(wifi);
@@ -18,7 +19,7 @@ WiFiServer server(420);
 
 void setup()
 {
-    Serial.begin(9600);
+    // Serial.begin(9600);
     delay(100);
     SPIFFS.begin();
     wifi.setup();
@@ -39,10 +40,10 @@ void handleEcho(String message)
         FileSystemUtil::format();
     }
     if (message == "read") {
-        // Serial.print("ssid: ");
-        // Serial.println(wifi.getSsid());
-        // Serial.print("key: ");
-        // Serial.println(wifi.getPassword());
+        Serial.print("ssid: ");
+        Serial.println(wifi.getSsid());
+        Serial.print("key: ");
+        Serial.println(wifi.getPassword());
     }
     if (message == "readConfig") {
         String config = FileSystemUtil::read("/config.json");
@@ -52,11 +53,22 @@ void handleEcho(String message)
 
 void loop()
 {
-    String message = ServerUtil::receive(server);
-    handleEcho(message);
-
-    JsonObject& json = JsonUtil::parse(message);
-    if (json.containsKey("command")) {
-        command.parse(json["command"]);
+    Message* message = ServerUtil::receive(server);
+    if (message) {
+        // for (size_t i = 0; i < message->length; ++i) {
+        //     Serial.printf("%x ", message->payload[i]);
+        // }
+        // Serial.printf("\n");
+        LedDriverRev1 driver;
+        driver.parseColors(message->payload, message->length);
     }
+    // Serial.println(message->length);
+
+    // handleEcho(message);
+    //
+    // JsonObject& json = JsonUtil::parse(message);
+    // if (json.containsKey("command")) {
+    //     command.parse(json["command"]);
+    // }
+    delete message;
 }

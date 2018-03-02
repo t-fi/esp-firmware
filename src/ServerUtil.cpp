@@ -1,22 +1,25 @@
 #include "ServerUtil.h"
 
-String ServerUtil::receive(WiFiServer& server)
+Message* ServerUtil::receive(WiFiServer& server)
 {
     WiFiClient client = server.available();
     if (!client)
-        return "";
-    Serial.println("A client connected");
-    String message = client.readStringUntil('\n');
-    Serial.println(message);
-    if (message.length() > 0) {
-        char buffer[message.length()];
-        message.toCharArray(buffer, message.length());
-        for (int i = 0; i < message.length(); ++i) {
-            Serial.printf("%d", buffer[i]);
-        }
-    }
+        return (Message*)0;
+    // Serial.println("A client connected");
 
+    uint8_t* buffer = new uint8_t[256];
+    int size;
+    for (size = 0; size < 256;) {
+        int byte = client.read();
+        if (byte == -1) continue;
+        if (byte == 10) break;
+        // Serial.println(byte);
+        buffer[size] = byte;
+        ++size;
+    }
+    // Serial.print("Size: ");
+    // Serial.println(size);
     client.stop();
 
-    return message;
+    return new Message(buffer, size);
 }
