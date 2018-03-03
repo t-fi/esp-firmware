@@ -1,6 +1,7 @@
 #include <FS.h>
 
 #include "FileSystemUtil.h"
+#include "log/LogEntryFileIO.h"
 
 std::string FileSystemUtil::read(std::string path)
 {
@@ -11,13 +12,16 @@ std::string FileSystemUtil::read(std::string path)
         f.close();
     }
 
-    char buffer[2048];
-    data.toCharArray(buffer, 2048);
-    return std::string(buffer);
+    char buffer[1024];
+    data.toCharArray(buffer, 1024);
+    std::string content(buffer);
+    LogEntryFileIO(IOType::read, path, content).send();
+    return content;
 }
 
 void FileSystemUtil::write(std::string path, std::string content)
 {
+    LogEntryFileIO(IOType::write, path, content).send();
     File f = SPIFFS.open(path.c_str(), "w");
     if (f) {
         f.print(content.c_str());

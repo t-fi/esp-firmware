@@ -5,6 +5,7 @@
 #include "WifiUtil.h"
 #include "JsonUtil.h"
 #include "EspUtil.h"
+#include "log/LogEntryWifiConnect.h"
 
 std::string WifiUtil::getSsid()
 {
@@ -33,8 +34,7 @@ void WifiUtil::getCredentials()
 
 void WifiUtil::connect()
 {
-    // Serial.printf("Connecting to \"%s\" ", ssidArr);
-    // Serial.printf("using password: \"%s\"\n", passwordArr);
+    LogEntryWifiConnect(this->getSsid(), this->getPassword()).send();
     WiFi.begin(getSsid().c_str(), getPassword().c_str());
     int c = 0;
     while (WiFi.status() != WL_CONNECTED && c < 40) {
@@ -80,8 +80,8 @@ void WifiUtil::updateCredentials(std::string newSsid, std::string newPassword)
 
 void WifiUtil::printStatus()
 {
-    // Serial.println("");
-    // Serial.println("WiFi connected");
-    // Serial.println("IP address: ");
-    // Serial.println(WiFi.localIP());
+    Serial.println("");
+    Serial.println("WiFi connected");
+    Serial.println("IP address: ");
+    Serial.println(WiFi.localIP());
 }
