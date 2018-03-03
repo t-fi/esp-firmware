@@ -2,16 +2,16 @@
 #define JSON_H
 
 #include <ArduinoJson.h>
+#include <string>
 
 class JsonUtil {
 public:
-    static JsonObject& parse(String jsonString);
-    static JsonObject& parseFile(String filePath);
-    static void save(String path, JsonObject& json);
-
+    static JsonObject& parse(std::string jsonString);
+    static JsonObject& parseFile(std::string filePath);
+    static void save(std::string path, JsonObject& json);
+    static std::string getString(JsonObject& json);
 private:
     JsonUtil() {}
 };
 
 #endif // JSON_H
-

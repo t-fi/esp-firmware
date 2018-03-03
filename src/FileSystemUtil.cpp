@@ -2,25 +2,25 @@
 
 #include "FileSystemUtil.h"
 
-String FileSystemUtil::read(String path)
+std::string FileSystemUtil::read(std::string path)
 {
     String data = "";
-    File f = SPIFFS.open(path, "r");
+    File f = SPIFFS.open(path.c_str(), "r");
     if (f) {
         data = f.readStringUntil(EOF);
         f.close();
     }
 
-    return data;
+    char buffer[2048];
+    data.toCharArray(buffer, 2048);
+    return std::string(buffer);
 }
 
-void FileSystemUtil::write(String path, String content)
+void FileSystemUtil::write(std::string path, std::string content)
 {
-    File f = SPIFFS.open(path, "w");
+    File f = SPIFFS.open(path.c_str(), "w");
     if (f) {
-        char buffer[content.length() + 1]; // +1: termination char
-        content.toCharArray(buffer, content.length() + 1);
-        f.print(buffer);
+        f.print(content.c_str());
         f.close();
     }
 }

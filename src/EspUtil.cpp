@@ -31,15 +31,7 @@ void EspUtil::restart()
 
 void EspUtil::updateConfig(JsonObject& json)
 {
-    File f = SPIFFS.open("/config.json", "w");
-    if (f) {
-        // buffer of 4096 crashes esp01
-        char buffer[2048];
-        json.printTo(buffer, sizeof(buffer));
-        f.print(buffer);
-        f.close();
-        Serial.println("Successfully updated config.");
-    }
+    JsonUtil::save("/config.json", json);
 }
 
 bool EspUtil::isConnected(int componentId)
@@ -57,18 +49,16 @@ bool EspUtil::isConnected(int componentId)
     return isConnected;
 }
 
-int EspUtil::getRestartCount() 
+int EspUtil::getRestartCount()
 {
-    char buffer[8];
-    String restartCount = FileSystemUtil::read("/restartCount");
-    restartCount.toCharArray(buffer, 8);
-
-    return atoi(buffer);
+    std::string restartCount = FileSystemUtil::read("/restartCount");
+    return atoi(restartCount.c_str());
 }
 
 void EspUtil::setRestartCount(int restartCount)
 {
-    String restartCountString = String(restartCount);
+    char restartCountChar[1];
+    itoa(restartCount, restartCountChar, 10);
+    std::string restartCountString(restartCountChar);
     FileSystemUtil::write("/restartCount", restartCountString);
 }
-

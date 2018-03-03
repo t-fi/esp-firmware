@@ -2,16 +2,15 @@
 #define FILESYSTEM_H
 
 #include <Arduino.h>
+#include <string>
 
 class FileSystemUtil {
 public:
-  static String read(String path);
-  static void write(String path, String content);
+  static std::string read(std::string path);
+  static void write(std::string path, std::string content);
   static void format();
 private:
   FileSystemUtil() {}
 };
 
 #endif // FILESYSTEM_H
-
-

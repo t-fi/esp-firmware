@@ -16,8 +16,8 @@ void CommandUtil::handle(ConfigureWifiCommand command)
 {
     DynamicJsonBuffer buffer;
     JsonObject& json = buffer.createObject();
-    json["ssid"] = command.ssid;
-    json["password"] = command.password;
+    json["ssid"] = command.ssid.c_str();
+    json["password"] = command.password.c_str();
     JsonUtil::save("/wifiCredentials.json", json);
     this->wifi.updateCredentials(command.ssid, command.password);
 }
@@ -44,8 +44,8 @@ void CommandUtil::parse(JsonObject& json)
         EspUtil::updateConfig(json["configureEsp"]);
     }
     else if (json.containsKey("configureWifi")) {
-        String ssid = json["configureWifi"]["ssid"];
-        String password = json["configureWifi"]["password"];
+        std::string ssid(json["configureWifi"]["ssid"].as<char*>());
+        std::string password(json["configureWifi"]["password"].as<char*>());
         ConfigureWifiCommand command(ssid, password);
         handle(command);
     }

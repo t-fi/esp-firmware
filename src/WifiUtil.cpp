@@ -6,12 +6,12 @@
 #include "JsonUtil.h"
 #include "EspUtil.h"
 
-String WifiUtil::getSsid()
+std::string WifiUtil::getSsid()
 {
     return ssid;
 }
 
-String WifiUtil::getPassword()
+std::string WifiUtil::getPassword()
 {
     return password;
 }
@@ -25,31 +25,24 @@ void WifiUtil::setup()
 void WifiUtil::getCredentials()
 {
     JsonObject& json = JsonUtil::parseFile("/wifiCredentials.json");
-    String ssidString = json["ssid"];
-    String passwordString = json["password"];
+    std::string ssidString(json["ssid"].as<char*>());
+    std::string passwordString(json["password"].as<char*>());
     ssid = ssidString;
     password = passwordString;
 }
 
 void WifiUtil::connect()
 {
-    char ssidArr[128];
-    char passwordArr[128];
-    getSsid().toCharArray(ssidArr, 128);
-    getPassword().toCharArray(passwordArr, 128);
-
     // Serial.printf("Connecting to \"%s\" ", ssidArr);
     // Serial.printf("using password: \"%s\"\n", passwordArr);
-    WiFi.begin(ssidArr, passwordArr);
+    WiFi.begin(getSsid().c_str(), getPassword().c_str());
     int c = 0;
     while (WiFi.status() != WL_CONNECTED && c < 40) {
         delay(500);
         c++;
-        // Serial.print(".");
 
         if (c == 40) {
             if (EspUtil::getRestartCount() == 5) {
-                // Serial.println();
                 setupAccessPoint();
             } else {
                 EspUtil::setRestartCount(EspUtil::getRestartCount() + 1);
@@ -79,7 +72,7 @@ void WifiUtil::setupAccessPoint()
     }
 }
 
-void WifiUtil::updateCredentials(String newSsid, String newPassword)
+void WifiUtil::updateCredentials(std::string newSsid, std::string newPassword)
 {
     ssid = newSsid;
     password = newPassword;
@@ -90,5 +83,5 @@ void WifiUtil::printStatus()
     // Serial.println("");
     // Serial.println("WiFi connected");
     // Serial.println("IP address: ");
-    Serial.println(WiFi.localIP());
+    // Serial.println(WiFi.localIP());
 }

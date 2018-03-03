@@ -4,23 +4,23 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
+#include <string>
 
 class WifiUtil {
 public:
-    String getSsid();
-    String getPassword();
+    std::string getSsid();
+    std::string getPassword();
 
     void setup();
     void getCredentials();
     void connect();
     void setupAccessPoint();
-    void updateCredentials(String newSsid, String newPassword);
+    void updateCredentials(std::string newSsid, std::string newPassword);
 
 private:
-    String ssid;
-    String password;
+    std::string ssid;
+    std::string password;
     void printStatus();
 };
 
 #endif // WIFI_H
-

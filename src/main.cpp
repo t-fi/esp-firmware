@@ -25,8 +25,6 @@ void setup()
     SPIFFS.begin();
     wifi.setup();
     server.begin();
-    // Wire.begin(2, 7);
-    // Wire.setClock(400000);
 }
 
 void handleEcho(String message)
@@ -42,13 +40,13 @@ void handleEcho(String message)
     }
     if (message == "read") {
         Serial.print("ssid: ");
-        Serial.println(wifi.getSsid());
+        Serial.println(wifi.getSsid().c_str());
         Serial.print("key: ");
-        Serial.println(wifi.getPassword());
+        Serial.println(wifi.getPassword().c_str());
     }
     if (message == "readConfig") {
-        String config = FileSystemUtil::read("/config.json");
-        Serial.println(config);
+        std::string config = FileSystemUtil::read("/config.json");
+        Serial.println(config.c_str());
     }
 }
 

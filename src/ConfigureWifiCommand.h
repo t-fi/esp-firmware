@@ -1,13 +1,13 @@
 #ifndef CONFIGUREWIFICOMMAND_H
 #define CONFIGUREWIFICOMMAND_H
 
-#include <Arduino.h>
+#include <string>
 
 class ConfigureWifiCommand {
 public:
-    ConfigureWifiCommand(String ssid, String password);
-    String ssid;
-    String password;
+    ConfigureWifiCommand(std::string ssid, std::string password);
+    std::string ssid;
+    std::string password;
 };
 
 #endif // CONFIGUREWIFICOMMAND_H
