@@ -12,6 +12,7 @@
 #include "ServerUtil.h"
 #include "CommandUtil.h"
 #include "LedDriverRev1.h"
+#include "log/LogEntry.h"
 
 WifiUtil wifi;
 CommandUtil command(wifi);
@@ -19,7 +20,7 @@ WiFiServer server(420);
 
 void setup()
 {
-    // Serial.begin(9600);
+    Serial.begin(9600);
     delay(100);
     SPIFFS.begin();
     wifi.setup();
@@ -59,8 +60,8 @@ void loop()
         //     Serial.printf("%x ", message->payload[i]);
         // }
         // Serial.printf("\n");
-        LedDriverRev1 driver;
-        driver.parseColors(message->payload, message->length);
+        // LedDriverRev1 driver;
+        // driver.parseColors(message->payload, message->length);
     }
     // Serial.println(message->length);
 
@@ -71,4 +72,5 @@ void loop()
     //     command.parse(json["command"]);
     // }
     delete message;
+    delay(500);
 }

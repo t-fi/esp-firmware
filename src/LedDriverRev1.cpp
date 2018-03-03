@@ -7,15 +7,24 @@ LedDriverRev1::LedDriverRev1(){
   initCol();
 }
 
-void ICACHE_RAM_ATTR LedDriverRev1::parseColors(uint8_t *data, int length){
-  uint8_t regLow;
-  uint8_t colorLow;
-  uint8_t colorHigh;
-  uint8_t dataI;
-  uint8_t dataIp1;
-  uint8_t dataColH;
+// todo
+void LedDriverRev1::setFade(uint8_t stripNbr, uint16_t *data) {
+  uint8_t stripOffset = (stripNbr-1)*32;
+  uint8_t twoI;
+  for (uint8_t i = 0; i < 32; i++) {
+    twoI = 2*i;
+    fadingCol[stripOffset+twoI] = (uint8_t)data[i];
+    fadingCol[stripOffset+twoI+1] = (uint8_t)(((data[i] >> 8) & 0x0F) | 0x00);  // todo
+  }
+}
 
-  length <<= 1;
+uint8_t calcFadeSteps(uint8_t stripNbr){
+
+}
+
+
+
+void ICACHE_RAM_ATTR LedDriverRev1::parseColors(uint8_t *data, uint8_t length){
   brzo_i2c_start_transaction(0x40, 1000);
   for (int i = 0; i < length; i+=2) {
     dataI = data[i];
@@ -34,11 +43,13 @@ void ICACHE_RAM_ATTR LedDriverRev1::parseColors(uint8_t *data, int length){
         brzo_i2c_write(&col[regLow], 3, false);
       }
     }else{
-      dataColH = dataIp1 & 0x0F;
-      col[colorHigh] = dataColH;
-      colRev[0] = col[colorHigh + 1];
-      colRev[1] = dataColH;
-      brzo_i2c_write(colRev, 2, false);
+      if (dataColH != dataIp1 & 0x0F) {
+        dataColH = dataIp1 & 0x0F;
+        col[colorHigh] = dataColH;
+        colRev[0] = col[colorHigh + 1];
+        colRev[1] = dataColH;
+        brzo_i2c_write(colRev, 2, false);
+      }
     }
     yield();
   }
@@ -58,7 +69,7 @@ void ICACHE_RAM_ATTR LedDriverRev1::initPCA9685(){
   mode2[0] = 0x01;
   mode2[1] = 0x05;
 
-  brzo_i2c_start_transaction(0x40, 200);
+  brzo_i2c_start_transaction(0x40, 1000);
   brzo_i2c_write(preScale, 2, false);
   brzo_i2c_write(mode1, 2, false);
   brzo_i2c_write(mode2, 2, false);
