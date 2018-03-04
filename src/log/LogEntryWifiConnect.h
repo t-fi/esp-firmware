@@ -4,6 +4,7 @@
 #include <ArduinoJson.h>
 #include <string>
 
+#include "../JsonUtil.h"
 #include "LogEntry.h"
 
 class LogEntryWifiConnect : public LogEntry {
@@ -21,7 +22,6 @@ private:
     LogEntryType type;
 
     void setMessage() {
-        this->message = "LogUpdate=";
         DynamicJsonBuffer buffer;
         JsonObject& json = buffer.createObject();
         json["action"] = "insert";
@@ -29,8 +29,7 @@ private:
         logEntry["ssid"] = this->ssid.c_str();
         logEntry["type"] = static_cast<int>(this->type);
         logEntry["text"] = std::string("Trying to connect to " + this->ssid).c_str();
-        std::string jsonString = JsonUtil::getString(json);
-        this->message += jsonString;
+        this->message = JsonUtil::getString(json);
     }
 };
 

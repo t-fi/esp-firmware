@@ -1,7 +1,6 @@
 #ifndef COMMANDUTIL_H
 #define COMMANDUTIL_H
 
-#include <Arduino.h>
 #include <ArduinoJson.h>
 #include "WifiUtil.h"
 #include "FlashCommand.h"

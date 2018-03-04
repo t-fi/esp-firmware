@@ -1,6 +1,6 @@
 #include "FlashCommand.h"
 
-FlashCommand::FlashCommand(String url)
+FlashCommand::FlashCommand(std::string url)
 {
     this->url = url;
 }

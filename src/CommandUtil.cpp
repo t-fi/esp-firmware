@@ -1,3 +1,5 @@
+#include <string>
+
 #include "CommandUtil.h"
 #include "JsonUtil.h"
 #include "EspUtil.h"
@@ -22,21 +24,10 @@ void CommandUtil::handle(ConfigureWifiCommand command)
     this->wifi.updateCredentials(command.ssid, command.password);
 }
 
-void CommandUtil::handle(SetColorCommand command)
-{
-    //int componentId = json["componentId"].as<int>();
-    //if (json.containsKey("fade")) {
-        // Call setFade() method of led class
-    //}
-    //else {
-        // Call setColor() method of led class
-    //}
-}
-
 void CommandUtil::parse(JsonObject& json)
 {
     if (json.containsKey("flash")) {
-        String url = json["flash"]["url"];
+        std::string url(json["flash"]["url"].as<char*>());
         FlashCommand command(url);
         handle(command);
     }
@@ -50,27 +41,7 @@ void CommandUtil::parse(JsonObject& json)
         handle(command);
     }
     else if (json.containsKey("toggle")) {
-        Serial.println(json["toggle"]["id"].as<int>());
+        // Serial.println(json["toggle"]["id"].as<int>());
         //toggle(json["toggle"]["componentId"].as<int>());
-    }
-    else if (json.containsKey("setColor")) {
-        word pwms[16];
-        for (int i = 0; i < 16; ++i) {
-            switch (i % 4) {
-                case 0:
-                    pwms[i] = json["setColor"]["red"].as<int>();
-                    break;
-                case 1:
-                    pwms[i] = json["setColor"]["green"].as<int>();
-                    break;
-                case 2:
-                    pwms[i] = json["setColor"]["blue"].as<int>();
-                    break;
-                case 3:
-                    pwms[i] = json["setColor"]["warmWhite"].as<int>();
-                    break;
-            }
-        }
-
     }
 }

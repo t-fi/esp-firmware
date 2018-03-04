@@ -17,10 +17,9 @@ protected:
 public:
     void send() {
         HTTPClient client;
-        client.begin("http://192.168.1.253/esp-web-app/front/");
+        client.begin("http://192.168.178.90/esp-web-app/front/index.php");
         client.addHeader("Content-Type", "application/x-www-form-urlencoded");
-        client.POST(this->message.c_str());
-        Serial.println(client.getString());
+        client.POST(std::string("LogUpdate=" + this->message).c_str());
         client.end();
     }
 };

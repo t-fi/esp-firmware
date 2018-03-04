@@ -4,7 +4,7 @@
 #include <ArduinoJson.h>
 #include <string>
 
-#include "JsonUtil.h"
+#include "../JsonUtil.h"
 #include "LogEntry.h"
 
 enum class IOType {
@@ -19,7 +19,6 @@ public:
         this->type = type;
         this->path = path;
         this->data = data;
-        this->output = output;
         this->ioType = ioType;
         this->setMessage();
     }
@@ -29,10 +28,8 @@ private:
     IOType ioType;
     std::string path;
     std::string data;
-    uint8_t output;
 
     void setMessage() {
-        this->message = "LogUpdate=";
         DynamicJsonBuffer buffer;
         JsonObject& json = buffer.createObject();
         json["action"] = "insert";
@@ -52,8 +49,8 @@ private:
                 logEntry["text"] = "Unknown I/O type.";
                 break;
         }
-        std::string jsonString = JsonUtil::getString(json);
-        this->message += jsonString;
+
+        this->message = JsonUtil::getString(json);
     }
 };
 

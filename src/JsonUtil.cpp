@@ -29,7 +29,8 @@ void JsonUtil::save(std::string path, JsonObject& json)
 
 std::string JsonUtil::getString(JsonObject& json)
 {
-    char jsonString[2048];
-    json.printTo(jsonString);
+    size_t bufferSize = json.measureLength();
+    char jsonString[bufferSize];
+    json.printTo(jsonString, bufferSize);
     return std::string(jsonString);
 }

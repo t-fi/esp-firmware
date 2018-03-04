@@ -1,6 +1,6 @@
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
-#include <FS.h>
+#include <Arduino.h>
 
 #include "WifiUtil.h"
 #include "JsonUtil.h"
@@ -30,6 +30,7 @@ void WifiUtil::getCredentials()
     std::string passwordString(json["password"].as<char*>());
     ssid = ssidString;
     password = passwordString;
+
 }
 
 void WifiUtil::connect()
@@ -80,8 +81,8 @@ void WifiUtil::updateCredentials(std::string newSsid, std::string newPassword)
 
 void WifiUtil::printStatus()
 {
-    Serial.println("");
-    Serial.println("WiFi connected");
-    Serial.println("IP address: ");
-    Serial.println(WiFi.localIP());
+    // Serial.println("");
+    // Serial.println("WiFi connected");
+    // Serial.println("IP address: ");
+    // Serial.println(WiFi.localIP());
 }

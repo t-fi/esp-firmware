@@ -5,15 +5,15 @@
 #include "JsonUtil.h"
 #include "FileSystemUtil.h"
 
-void EspUtil::updateEsp(String path)
+void EspUtil::updateEsp(std::string path)
 {
-    Serial.println(path);
+    Serial.println(path.c_str());
     if (path != "") {
         for (int i = 0; i < 10; ++i) {
-            Serial.println("Fetching firmware...");
-            int result = ESPhttpUpdate.update(path);
-            Serial.println(result);
-            Serial.println(ESPhttpUpdate.getLastError());
+            // Serial.println("Fetching firmware...");
+            int result = ESPhttpUpdate.update(path.c_str());
+            // Serial.println(result);
+            // Serial.println(ESPhttpUpdate.getLastError());
 
             if (result == 2) {
                 delay(100);

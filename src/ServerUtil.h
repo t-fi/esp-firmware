@@ -1,7 +1,6 @@
 #ifndef SERVERUTIL_H
 #define SERVERUTIL_H
 
-#include <Arduino.h>
 #include <ESP8266WiFi.h>
 
 struct Message {

@@ -5,18 +5,25 @@
 
 std::string FileSystemUtil::read(std::string path)
 {
-    String data = "";
     File f = SPIFFS.open(path.c_str(), "r");
     if (f) {
-        data = f.readStringUntil(EOF);
+        char buffer[f.size()];
+        for (int i = 0; i < f.size(); ++i) {
+            char asciiCode = f.read();
+            if (asciiCode == 10) {
+                buffer[i] = '\0';
+                break;
+            }
+            buffer[i] = asciiCode;
+        }
+
         f.close();
+        std::string payload(buffer);
+        LogEntryFileIO(IOType::read, path, payload).send();
+        return payload;
     }
 
-    char buffer[1024];
-    data.toCharArray(buffer, 1024);
-    std::string content(buffer);
-    LogEntryFileIO(IOType::read, path, content).send();
-    return content;
+    return std::string();
 }
 
 void FileSystemUtil::write(std::string path, std::string content)

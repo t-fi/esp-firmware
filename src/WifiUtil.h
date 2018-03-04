@@ -1,9 +1,6 @@
 #ifndef WIFI_H
 #define WIFI_H
 
-#include <Arduino.h>
-#include <ArduinoJson.h>
-#include <ESP8266WiFi.h>
 #include <string>
 
 class WifiUtil {

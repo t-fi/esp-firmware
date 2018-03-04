@@ -2,7 +2,6 @@
 #include <ESP8266httpUpdate.h>
 #include <ESP8266WiFi.h>
 #include <FS.h>
-#include <Wire.h>
 
 #include "Enums.h"
 #include "WifiUtil.h"
@@ -60,6 +59,7 @@ void loop()
         // Serial.printf("\n");
         // LedDriverRev1 driver;
         // driver.parseColors(message->payload, message->length);
+        delete message;
     }
     // Serial.println(message->length);
 
@@ -69,6 +69,6 @@ void loop()
     // if (json.containsKey("command")) {
     //     command.parse(json["command"]);
     // }
-    delete message;
+
     delay(500);
 }

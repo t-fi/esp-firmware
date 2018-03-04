@@ -1,12 +1,12 @@
 #ifndef FLASHCOMMAND_H
 #define FLASHCOMMAND_H
 
-#include <Arduino.h>
+#include <string>
 
 class FlashCommand {
 public:
-    FlashCommand(String url);
-    String url;
+    FlashCommand(std::string url);
+    std::string url;
 };
 
 #endif // FLASHCOMMAND_H
