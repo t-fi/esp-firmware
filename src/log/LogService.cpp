@@ -1,24 +1,39 @@
 #include "LogService.h"
 #include "../WifiService.h"
 
-void LogService::setWifi(WifiService* wifiService) {
+void LogService::setWifiService(WifiService* wifiService)
+{
     this->wifiService = wifiService;
-    this->isInitialized = true;
 }
 
-void LogService::log(LogEntry logEntry) {
-    if (this->canSend()) logEntry.send();
-    else this->queue.push(logEntry);
+void LogService::setEspService(EspService* espService)
+{
+    this->espService = espService;
 }
 
-void LogService::daemon() {
+void LogService::log(LogEntry* logEntry)
+{
+    this->queue.push(logEntry);
+}
+
+void LogService::daemon()
+{
     if (this->queue.size() < 1) return;
     if (this->canSend()) {
-            this->queue.front().send();
-            this->queue.pop();
+        LogEntry* logEntry = this->queue.front();
+        logEntry->setMessage(this->espService->getId());
+        logEntry->send();
+        this->queue.pop();
+        delete logEntry;
     }
 }
 
-bool LogService::canSend() {
-    return this->isInitialized && this->wifiService->isConnected();
+bool LogService::canSend()
+{
+    return this->isInitialized() && this->wifiService->isConnected();
+}
+
+bool LogService::isInitialized()
+{
+    return this->espService && this->wifiService;
 }

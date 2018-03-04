@@ -1,7 +1,7 @@
 #include "JsonService.h"
 #include "FileSystemService.h"
 
-JsonObject& JsonService::parse(std::string jsonString)
+JsonObject& JsonService::parse(const std::string jsonString)
 {
     DynamicJsonBuffer JSONBuffer;
     JsonObject& parsed = JSONBuffer.parseObject(jsonString.c_str());
@@ -15,19 +15,19 @@ JsonObject& JsonService::parse(std::string jsonString)
     return parsed;
 }
 
-JsonObject& JsonService::parseFile(std::string filePath)
+JsonObject& JsonService::parseFile(const std::string filePath)
 {
     std::string configString = this->fileSystemService.read(filePath);
     return parse(configString);
 }
 
-void JsonService::save(std::string path, JsonObject& json)
+void JsonService::save(const std::string path, const JsonObject& json)
 {
     std::string jsonString = this->getString(json);
     this->fileSystemService.write(path, jsonString);
 }
 
-std::string JsonService::getString(JsonObject& json)
+std::string JsonService::getString(const JsonObject& json)
 {
     size_t bufferSize = json.measureLength() + 1; // +1: termination char
     char jsonString[bufferSize];

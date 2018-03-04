@@ -3,17 +3,17 @@
 #include "CommandService.h"
 #include "EspService.h"
 
-CommandType CommandService::getType(char type)
+const CommandType CommandService::getType(const char type)
 {
     return static_cast<CommandType>(type);
 }
 
-void CommandService::handle(FlashCommand command)
+void CommandService::handle(const FlashCommand command)
 {
     this->espService.updateEsp(command.url);
 }
 
-void CommandService::handle(ConfigureWifiCommand command)
+void CommandService::handle(const ConfigureWifiCommand command)
 {
     DynamicJsonBuffer buffer;
     JsonObject& json = buffer.createObject();
@@ -23,7 +23,7 @@ void CommandService::handle(ConfigureWifiCommand command)
     this->wifiService.updateCredentials(command.ssid, command.password);
 }
 
-void CommandService::parse(JsonObject& json)
+void CommandService::parse(const JsonObject& json)
 {
     if (json.containsKey("flash")) {
         std::string url(json["flash"]["url"].as<char*>());

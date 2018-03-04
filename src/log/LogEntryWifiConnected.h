@@ -1,20 +1,21 @@
-#ifndef LOGENTRYWIFICONNECT_H
-#define LOGENTRYWIFICONNECT_H
+#ifndef LOGENTRYWIFICONNECTED_H
+#define LOGENTRYWIFICONNECTED_H
 
+#include <Arduino.h>
 #include <ArduinoJson.h>
 #include <string>
 
 #include "../JsonService.h"
 #include "LogEntry.h"
 
-class LogEntryWifiConnect : public LogEntry {
+class LogEntryWifiConnected : public LogEntry {
 public:
-    LogEntryWifiConnect(std::string ssid,
-        std::string password,
+    LogEntryWifiConnected(std::string ssid,
+        IPAddress address,
         LogEntryLevel type = LogEntryLevel::Info) : LogEntry()
     {
         this->ssid = ssid;
-        this->password = password;
+        this->address = address;
         this->type = type;
     }
 
@@ -26,13 +27,22 @@ public:
         logEntry["id"] = espId;
         logEntry["ssid"] = this->ssid.c_str();
         logEntry["type"] = static_cast<int>(this->type);
-        logEntry["text"] = std::string("Trying to connect to " + this->ssid).c_str();
+
+        logEntry["text"] = std::string("Successfully connected to " + this->ssid
+            + ". IP Address: " + this->getIpString()).c_str();
         this->message = JsonService::getString(json);
     }
 private:
     std::string ssid;
-    std::string password;
+    IPAddress address;
     LogEntryLevel type;
+
+    std::string getIpString() {
+        char ipAddress[16];
+        snprintf(ipAddress, 16, "%d.%d.%d.%d", this->address[0],
+        this->address[1], this->address[2], this->address[3]);
+        return std::string(ipAddress);
+    }
 };
 
-#endif // LOGENTRYWIFICONNECT_H
+#endif // LOGENTRYWIFICONNECTED_H

@@ -8,13 +8,14 @@
 
 class JsonService {
 public:
-    JsonService(FileSystemService& fileSystemService) : fileSystemService(fileSystemService) {}
+    JsonService(FileSystemService& fileSystemService)
+    : fileSystemService(fileSystemService) {}
 
     FileSystemService& fileSystemService;
-    JsonObject& parse(std::string jsonString);
-    JsonObject& parseFile(std::string filePath);
-    void save(std::string path, JsonObject& json);
-    static std::string getString(JsonObject& json);
+    JsonObject& parse(const std::string jsonString);
+    JsonObject& parseFile(const std::string filePath);
+    void save(const std::string path, const JsonObject& json);
+    static std::string getString(const JsonObject& json);
 };
 
 #endif // JSON_H

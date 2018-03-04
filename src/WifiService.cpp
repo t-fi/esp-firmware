@@ -5,35 +5,37 @@
 #include "JsonService.h"
 #include "EspService.h"
 #include "log/LogEntryWifiConnect.h"
+#include "log/LogEntryWifiConnected.h"
 
 std::string WifiService::getSsid()
 {
-    return ssid;
+    return this->ssid;
 }
 
 std::string WifiService::getPassword()
 {
-    return password;
+    return this->password;
 }
 
 void WifiService::setup()
 {
-    getCredentials();
-    connect();
+    this->getCredentials();
+    this->connect();
 }
 
 void WifiService::getCredentials()
 {
-    JsonObject& json = this->jsonService.parseFile("/wifiCredentials.json");
+    const JsonObject& json = this->jsonService.parseFile("/wifiCredentials.json");
     std::string ssidString(json["ssid"].as<char*>());
     std::string passwordString(json["password"].as<char*>());
-    ssid = ssidString;
-    password = passwordString;
+    this->ssid = ssidString;
+    this->password = passwordString;
 }
 
 void WifiService::connect()
 {
-    this->logService.log(LogEntryWifiConnect(this->getSsid(), this->getPassword()));
+    LogEntryWifiConnect* logEntry = new LogEntryWifiConnect(this->getSsid(), this->getPassword());
+    this->logService.log(logEntry);
     WiFi.begin(getSsid().c_str(), getPassword().c_str());
     int c = 0;
     while (WiFi.status() != WL_CONNECTED && c < 40) {
@@ -51,10 +53,11 @@ void WifiService::connect()
     }
 
     if (WiFi.status() == WL_CONNECTED) {
-        printStatus();
-    } else {
-        this->espService.setRestartCount(0);
+        LogEntryWifiConnected* logEntry = new LogEntryWifiConnected(this->getSsid(), WiFi.localIP());
+        this->logService.log(logEntry);
     }
+
+    this->espService.setRestartCount(0);
 }
 
 void WifiService::setupAccessPoint()
@@ -75,12 +78,4 @@ void WifiService::updateCredentials(std::string newSsid, std::string newPassword
 {
     ssid = newSsid;
     password = newPassword;
-}
-
-void WifiService::printStatus()
-{
-    // Serial.println("");
-    // Serial.println("WiFi connected");
-    // Serial.println("IP address: ");
-    // Serial.println(WiFi.localIP());
 }

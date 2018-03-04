@@ -3,7 +3,7 @@
 
 #include "EspService.h"
 
-void EspService::updateEsp(std::string path)
+void EspService::updateEsp(const std::string path)
 {
     Serial.println(path.c_str());
     if (path != "") {
@@ -27,12 +27,12 @@ void EspService::restart()
     ESP.restart();
 }
 
-void EspService::updateConfig(JsonObject& json)
+void EspService::updateConfig(const JsonObject& json)
 {
     this->jsonService.save("/config.json", json);
 }
 
-bool EspService::isConnected(int componentId)
+bool EspService::isConnected(const int componentId)
 {
     bool isConnected = false;
     JsonObject& config = this->jsonService.parseFile("/config.json");
@@ -47,13 +47,13 @@ bool EspService::isConnected(int componentId)
     return isConnected;
 }
 
-int EspService::getRestartCount()
+const int EspService::getRestartCount()
 {
     std::string restartCount = this->fileSystemService.read("/restartCount");
     return atoi(restartCount.c_str());
 }
 
-void EspService::setRestartCount(int restartCount)
+void EspService::setRestartCount(const int restartCount)
 {
     char restartCountChar[1];
     itoa(restartCount, restartCountChar, 10);

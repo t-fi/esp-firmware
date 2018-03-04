@@ -17,26 +17,20 @@ public:
     LogEntryFileIO(IOType ioType,
         std::string path,
         std::string data,
-        LogEntryLevel type = LogEntryLevel::Info)
+        LogEntryLevel type = LogEntryLevel::Info) : LogEntry()
     {
         this->type = type;
         this->path = path;
         this->data = data;
         this->ioType = ioType;
-        this->setMessage();
     }
 
-private:
-    LogEntryLevel type;
-    IOType ioType;
-    std::string path;
-    std::string data;
-
-    void setMessage() {
+    virtual void setMessage(const int espId) override {
         DynamicJsonBuffer buffer;
         JsonObject& json = buffer.createObject();
         json["action"] = "insert";
         JsonObject& logEntry = json.createNestedObject("logEntry");
+        logEntry["id"] = espId;
         logEntry["type"] = static_cast<int>(this->type);
         logEntry["path"] = this->path.c_str();
         logEntry["payload"] = this->data.c_str();
@@ -55,6 +49,11 @@ private:
 
         this->message = JsonService::getString(json);
     }
+private:
+    LogEntryLevel type;
+    IOType ioType;
+    std::string path;
+    std::string data;
 };
 
 #endif // LOGENTRYFILEIO_H

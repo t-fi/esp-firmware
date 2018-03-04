@@ -5,19 +5,23 @@
 
 #include "LogEntry.h"
 
+// Forward Declarations to resolve circular dependency
 class WifiService;
+class EspService;
 
 class LogService {
 public:
-    void log(LogEntry logEntry);
-    void setWifi(WifiService* wifiService);
+    void log(LogEntry* logEntry);
+    void setWifiService(WifiService* wifiService);
+    void setEspService(EspService* espService);
     void daemon();
 private:
     bool canSend();
+    bool isInitialized();
 
-    bool isInitialized = false;
-    WifiService* wifiService;
-    std::queue<LogEntry> queue;
+    WifiService* wifiService = nullptr;
+    EspService* espService = nullptr;
+    std::queue<LogEntry*> queue;
 };
 
 #endif // LOGSERVICE_H

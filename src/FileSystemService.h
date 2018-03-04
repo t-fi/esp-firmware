@@ -8,10 +8,11 @@
 class FileSystemService {
 public:
     FileSystemService(LogService& logService) : logService(logService) {}
-    LogService& logService;
-    std::string read(std::string path);
-    void write(std::string path, std::string content);
+    std::string read(const std::string path);
+    void write(const std::string path, const std::string content);
     void format();
+private:
+    LogService& logService;
 };
 
 #endif // FILESYSTEM_H

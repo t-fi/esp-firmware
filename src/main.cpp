@@ -18,7 +18,8 @@
 LogService logService;
 FileSystemService fileSystemService(logService);
 JsonService jsonService(fileSystemService);
-EspService espService(fileSystemService, jsonService);
+ConfigurationService configurationService(jsonService);
+EspService espService(fileSystemService, jsonService, configurationService);
 WifiService wifiService(logService, jsonService, espService);
 CommandService commandService(wifiService, jsonService, espService);
 WiFiServer server(420);
@@ -41,8 +42,9 @@ void setup()
     Serial.begin(9600);
     delay(100);
     SPIFFS.begin();
-    logService.setWifi(&wifiService);
     wifiService.setup();
+    logService.setWifiService(&wifiService);
+    logService.setEspService(&espService);
     server.begin();
 
     logDaemon.setInterval(100);

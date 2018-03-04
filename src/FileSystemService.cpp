@@ -3,7 +3,7 @@
 #include "FileSystemService.h"
 #include "log/LogEntryFileIO.h"
 
-std::string FileSystemService::read(std::string path)
+std::string FileSystemService::read(const std::string path)
 {
     File f = SPIFFS.open(path.c_str(), "r");
     if (f) {
@@ -19,17 +19,21 @@ std::string FileSystemService::read(std::string path)
 
         f.close();
         std::string payload(buffer);
-        if (path != "/wifiCredentials.json")
-            this->logService.log(LogEntryFileIO(IOType::read, path, payload));
+        if (path != "/wifiCredentials.json") {
+            LogEntryFileIO* logEntry = new LogEntryFileIO(IOType::read, path, payload);
+            this->logService.log(logEntry);
+        }
+
         return payload;
     }
 
     return std::string();
 }
 
-void FileSystemService::write(std::string path, std::string content)
+void FileSystemService::write(const std::string path, const std::string content)
 {
-    LogEntryFileIO(IOType::write, path, content).send();
+    LogEntryFileIO* logEntry = new LogEntryFileIO(IOType::write, path, content);
+    this->logService.log(logEntry);
     File f = SPIFFS.open(path.c_str(), "w");
     if (f) {
         f.print(content.c_str());

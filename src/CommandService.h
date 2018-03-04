@@ -20,15 +20,15 @@ public:
         EspService& espService)
         : wifiService(wifiService), jsonService(jsonService),
         espService(espService) {}
-    void parse(JsonObject& json);
-    CommandType getType(char type);
+    void parse(const JsonObject& json);
+    const CommandType getType(const char type);
 private:
     WifiService& wifiService;
     JsonService& jsonService;
     EspService& espService;
-    void handle(FlashCommand command);
-    void handle(ConfigureWifiCommand command);
-    void handle(SetColorCommand command);
+    void handle(const FlashCommand command);
+    void handle(const ConfigureWifiCommand command);
+    void handle(const SetColorCommand command);
 };
 
 #endif // COMMANDUTIL_H
