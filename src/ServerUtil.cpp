@@ -7,7 +7,7 @@ Message* ServerUtil::receive(WiFiServer& server)
         return (Message*)0;
     // Serial.println("A client connected");
 
-    uint8_t* buffer = new uint8_t[1024];
+    char* buffer = new char[1024];
     int size;
     for (size = 0; size < 1024;) {
         int byte = client.read();

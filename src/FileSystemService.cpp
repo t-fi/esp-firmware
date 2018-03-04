@@ -19,7 +19,8 @@ std::string FileSystemService::read(std::string path)
 
         f.close();
         std::string payload(buffer);
-        LogEntryFileIO(IOType::read, path, payload).send();
+        if (path != "/wifiCredentials.json")
+            this->logService.log(LogEntryFileIO(IOType::read, path, payload));
         return payload;
     }
 

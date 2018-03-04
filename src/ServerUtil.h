@@ -4,7 +4,7 @@
 #include <ESP8266WiFi.h>
 
 struct Message {
-    Message(uint8_t* payload, int length) {
+    Message(char* payload, int length) {
         this->payload = payload;
         this->length = length;
     }
@@ -12,7 +12,7 @@ struct Message {
         delete[] payload;
     }
 
-    uint8_t* payload;
+    char* payload;
     int length;
 };
 

@@ -20,14 +20,20 @@ FileSystemService fileSystemService(logService);
 JsonService jsonService(fileSystemService);
 EspService espService(fileSystemService, jsonService);
 WifiService wifiService(logService, jsonService, espService);
-CommandService command(wifiService, jsonService, espService);
+CommandService commandService(wifiService, jsonService, espService);
 WiFiServer server(420);
+LedDriverRev1 driver;
 
 Thread logDaemon;
-StaticThreadController<1> threads(&logDaemon);
+Thread fadeDaemon;
+StaticThreadController<2> threads(&logDaemon, &fadeDaemon);
 
 void logDaemonWrapper() {
     logService.daemon();
+}
+
+void fadeDaemonWrapper() {
+    // driver.fade();
 }
 
 void setup()
@@ -41,9 +47,12 @@ void setup()
 
     logDaemon.setInterval(100);
     logDaemon.onRun(logDaemonWrapper);
+    fadeDaemon.enabled = false;
+    fadeDaemon.setInterval(0);
+    fadeDaemon.onRun(fadeDaemonWrapper);
 }
 
-void handleEcho(String message)
+void handleEcho(std::string message)
 {
     if (message == "new")  {
         Serial.println("thisistherealshit!");
@@ -71,22 +80,27 @@ void loop()
     threads.run();
     Message* message = ServerUtil::receive(server);
     if (message) {
-        // for (size_t i = 0; i < message->length; ++i) {
-        //     Serial.printf("%x ", message->payload[i]);
-        // }
-        // Serial.printf("\n");
-        // LedDriverRev1 driver;
-        // driver.parseColors(message->payload, message->length);
+        CommandType type = commandService.getType(message->payload[0]);
+        switch(type) {
+            case CommandType::SetColor:
+                fadeDaemon.enabled = false;
+                driver.parseColors((uint8_t*)message->payload, message->length);
+                break;
+            case CommandType::SetColorFade:
+                fadeDaemon.enabled = true;
+                break;
+            case CommandType::Json:
+            {
+                JsonObject& json = jsonService.parse(std::string(message->payload));
+                if (json.containsKey("command"))
+                    commandService.parse(json["command"]);
+                break;
+            }
+            default:
+                handleEcho(std::string(message->payload));
+                break;
+        }
+
         delete message;
     }
-    // Serial.println(message->length);
-
-    // handleEcho(message);
-    //
-    // JsonObject& json = JsonUtil::parse(message);
-    // if (json.containsKey("command")) {
-    //     command.parse(json["command"]);
-    // }
-
-    delay(500);
 }

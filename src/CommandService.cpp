@@ -3,6 +3,11 @@
 #include "CommandService.h"
 #include "EspService.h"
 
+CommandType CommandService::getType(char type)
+{
+    return static_cast<CommandType>(type);
+}
+
 void CommandService::handle(FlashCommand command)
 {
     this->espService.updateEsp(command.url);
