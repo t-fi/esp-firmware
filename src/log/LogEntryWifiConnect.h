@@ -4,12 +4,15 @@
 #include <ArduinoJson.h>
 #include <string>
 
-#include "../JsonUtil.h"
+#include "../JsonService.h"
 #include "LogEntry.h"
 
 class LogEntryWifiConnect : public LogEntry {
 public:
-    LogEntryWifiConnect(std::string ssid, std::string password, LogEntryType type = LogEntryType::Info) {
+    LogEntryWifiConnect(std::string ssid,
+        std::string password,
+        LogEntryLevel type = LogEntryLevel::Info)
+    {
         this->ssid = ssid;
         this->password = password;
         this->type = type;
@@ -19,7 +22,7 @@ public:
 private:
     std::string ssid;
     std::string password;
-    LogEntryType type;
+    LogEntryLevel type;
 
     void setMessage() {
         DynamicJsonBuffer buffer;
@@ -29,7 +32,7 @@ private:
         logEntry["ssid"] = this->ssid.c_str();
         logEntry["type"] = static_cast<int>(this->type);
         logEntry["text"] = std::string("Trying to connect to " + this->ssid).c_str();
-        this->message = JsonUtil::getString(json);
+        this->message = JsonService::getString(json);
     }
 };
 

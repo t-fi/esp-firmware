@@ -1,11 +1,9 @@
 #include <ESP8266httpUpdate.h>
 #include <FS.h>
 
-#include "EspUtil.h"
-#include "JsonUtil.h"
-#include "FileSystemUtil.h"
+#include "EspService.h"
 
-void EspUtil::updateEsp(std::string path)
+void EspService::updateEsp(std::string path)
 {
     Serial.println(path.c_str());
     if (path != "") {
@@ -23,21 +21,21 @@ void EspUtil::updateEsp(std::string path)
     }
 }
 
-void EspUtil::restart()
+void EspService::restart()
 {
     delay(100);
     ESP.restart();
 }
 
-void EspUtil::updateConfig(JsonObject& json)
+void EspService::updateConfig(JsonObject& json)
 {
-    JsonUtil::save("/config.json", json);
+    this->jsonService.save("/config.json", json);
 }
 
-bool EspUtil::isConnected(int componentId)
+bool EspService::isConnected(int componentId)
 {
     bool isConnected = false;
-    JsonObject& config = JsonUtil::parseFile("/config.json");
+    JsonObject& config = this->jsonService.parseFile("/config.json");
     JsonArray& components = config["esp"]["components"];
 
     for (auto component : components) {
@@ -49,16 +47,16 @@ bool EspUtil::isConnected(int componentId)
     return isConnected;
 }
 
-int EspUtil::getRestartCount()
+int EspService::getRestartCount()
 {
-    std::string restartCount = FileSystemUtil::read("/restartCount");
+    std::string restartCount = this->fileSystemService.read("/restartCount");
     return atoi(restartCount.c_str());
 }
 
-void EspUtil::setRestartCount(int restartCount)
+void EspService::setRestartCount(int restartCount)
 {
     char restartCountChar[1];
     itoa(restartCount, restartCountChar, 10);
     std::string restartCountString(restartCountChar);
-    FileSystemUtil::write("/restartCount", restartCountString);
+    this->fileSystemService.write("/restartCount", restartCountString);
 }

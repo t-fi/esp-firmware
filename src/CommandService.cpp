@@ -1,30 +1,24 @@
 #include <string>
 
-#include "CommandUtil.h"
-#include "JsonUtil.h"
-#include "EspUtil.h"
-#include "WifiUtil.h"
+#include "CommandService.h"
+#include "EspService.h"
 
-CommandUtil::CommandUtil(WifiUtil& wifi) {
-    this->wifi = wifi;
-}
-
-void CommandUtil::handle(FlashCommand command)
+void CommandService::handle(FlashCommand command)
 {
-    EspUtil::updateEsp(command.url);
+    this->espService.updateEsp(command.url);
 }
 
-void CommandUtil::handle(ConfigureWifiCommand command)
+void CommandService::handle(ConfigureWifiCommand command)
 {
     DynamicJsonBuffer buffer;
     JsonObject& json = buffer.createObject();
     json["ssid"] = command.ssid.c_str();
     json["password"] = command.password.c_str();
-    JsonUtil::save("/wifiCredentials.json", json);
-    this->wifi.updateCredentials(command.ssid, command.password);
+    this->jsonService.save("/wifiCredentials.json", json);
+    this->wifiService.updateCredentials(command.ssid, command.password);
 }
 
-void CommandUtil::parse(JsonObject& json)
+void CommandService::parse(JsonObject& json)
 {
     if (json.containsKey("flash")) {
         std::string url(json["flash"]["url"].as<char*>());
@@ -32,7 +26,7 @@ void CommandUtil::parse(JsonObject& json)
         handle(command);
     }
     else if (json.containsKey("configureEsp")) {
-        EspUtil::updateConfig(json["configureEsp"]);
+        this->espService.updateConfig(json["configureEsp"]);
     }
     else if (json.containsKey("configureWifi")) {
         std::string ssid(json["configureWifi"]["ssid"].as<char*>());

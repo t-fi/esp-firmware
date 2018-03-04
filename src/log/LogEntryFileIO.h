@@ -4,7 +4,7 @@
 #include <ArduinoJson.h>
 #include <string>
 
-#include "../JsonUtil.h"
+#include "../JsonService.h"
 #include "LogEntry.h"
 
 enum class IOType {
@@ -14,8 +14,11 @@ enum class IOType {
 
 class LogEntryFileIO : public LogEntry {
 public:
-    LogEntryFileIO(IOType ioType, std::string path, std::string data,
-        LogEntryType type = LogEntryType::Info) {
+    LogEntryFileIO(IOType ioType,
+        std::string path,
+        std::string data,
+        LogEntryLevel type = LogEntryLevel::Info)
+    {
         this->type = type;
         this->path = path;
         this->data = data;
@@ -24,7 +27,7 @@ public:
     }
 
 private:
-    LogEntryType type;
+    LogEntryLevel type;
     IOType ioType;
     std::string path;
     std::string data;
@@ -50,7 +53,7 @@ private:
                 break;
         }
 
-        this->message = JsonUtil::getString(json);
+        this->message = JsonService::getString(json);
     }
 };
 

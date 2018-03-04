@@ -1,9 +1,9 @@
 #include <FS.h>
 
-#include "FileSystemUtil.h"
+#include "FileSystemService.h"
 #include "log/LogEntryFileIO.h"
 
-std::string FileSystemUtil::read(std::string path)
+std::string FileSystemService::read(std::string path)
 {
     File f = SPIFFS.open(path.c_str(), "r");
     if (f) {
@@ -26,7 +26,7 @@ std::string FileSystemUtil::read(std::string path)
     return std::string();
 }
 
-void FileSystemUtil::write(std::string path, std::string content)
+void FileSystemService::write(std::string path, std::string content)
 {
     LogEntryFileIO(IOType::write, path, content).send();
     File f = SPIFFS.open(path.c_str(), "w");
@@ -36,7 +36,7 @@ void FileSystemUtil::write(std::string path, std::string content)
     }
 }
 
-void FileSystemUtil::format()
+void FileSystemService::format()
 {
     SPIFFS.format();
     SPIFFS.begin();

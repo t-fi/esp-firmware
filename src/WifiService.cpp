@@ -1,41 +1,39 @@
 #include <ESP8266HTTPClient.h>
-#include <ESP8266httpUpdate.h>
 #include <Arduino.h>
 
-#include "WifiUtil.h"
-#include "JsonUtil.h"
-#include "EspUtil.h"
+#include "WifiService.h"
+#include "JsonService.h"
+#include "EspService.h"
 #include "log/LogEntryWifiConnect.h"
 
-std::string WifiUtil::getSsid()
+std::string WifiService::getSsid()
 {
     return ssid;
 }
 
-std::string WifiUtil::getPassword()
+std::string WifiService::getPassword()
 {
     return password;
 }
 
-void WifiUtil::setup()
+void WifiService::setup()
 {
     getCredentials();
     connect();
 }
 
-void WifiUtil::getCredentials()
+void WifiService::getCredentials()
 {
-    JsonObject& json = JsonUtil::parseFile("/wifiCredentials.json");
+    JsonObject& json = this->jsonService.parseFile("/wifiCredentials.json");
     std::string ssidString(json["ssid"].as<char*>());
     std::string passwordString(json["password"].as<char*>());
     ssid = ssidString;
     password = passwordString;
-
 }
 
-void WifiUtil::connect()
+void WifiService::connect()
 {
-    LogEntryWifiConnect(this->getSsid(), this->getPassword()).send();
+    this->logService.log(LogEntryWifiConnect(this->getSsid(), this->getPassword()));
     WiFi.begin(getSsid().c_str(), getPassword().c_str());
     int c = 0;
     while (WiFi.status() != WL_CONNECTED && c < 40) {
@@ -43,11 +41,11 @@ void WifiUtil::connect()
         c++;
 
         if (c == 40) {
-            if (EspUtil::getRestartCount() == 5) {
+            if (this->espService.getRestartCount() == 5) {
                 setupAccessPoint();
             } else {
-                EspUtil::setRestartCount(EspUtil::getRestartCount() + 1);
-                EspUtil::restart();
+                this->espService.setRestartCount(this->espService.getRestartCount() + 1);
+                this->espService.restart();
             }
         }
     }
@@ -55,11 +53,11 @@ void WifiUtil::connect()
     if (WiFi.status() == WL_CONNECTED) {
         printStatus();
     } else {
-        EspUtil::setRestartCount(0);
+        this->espService.setRestartCount(0);
     }
 }
 
-void WifiUtil::setupAccessPoint()
+void WifiService::setupAccessPoint()
 {
     WiFi.mode(WIFI_AP);
     // Serial.print("Setting up soft-AP ... ");
@@ -69,17 +67,17 @@ void WifiUtil::setupAccessPoint()
     }
     else {
         // Serial.println("Failed! Restarting Esp ...");
-        EspUtil::restart();
+        this->espService.restart();
     }
 }
 
-void WifiUtil::updateCredentials(std::string newSsid, std::string newPassword)
+void WifiService::updateCredentials(std::string newSsid, std::string newPassword)
 {
     ssid = newSsid;
     password = newPassword;
 }
 
-void WifiUtil::printStatus()
+void WifiService::printStatus()
 {
     // Serial.println("");
     // Serial.println("WiFi connected");

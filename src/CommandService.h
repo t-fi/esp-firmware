@@ -2,17 +2,22 @@
 #define COMMANDUTIL_H
 
 #include <ArduinoJson.h>
-#include "WifiUtil.h"
+#include "WifiService.h"
 #include "FlashCommand.h"
 #include "ConfigureWifiCommand.h"
 #include "SetColorCommand.h"
+#include "JsonService.h"
 
-class CommandUtil {
+class CommandService {
 public:
-    CommandUtil(WifiUtil& wifi);
+    CommandService(WifiService& wifiService, JsonService& jsonService,
+        EspService& espService)
+        : wifiService(wifiService), jsonService(jsonService), espService(espService) {}
     void parse(JsonObject& json);
 private:
-    WifiUtil wifi;
+    WifiService& wifiService;
+    JsonService& jsonService;
+    EspService& espService;
     void handle(FlashCommand command);
     void handle(ConfigureWifiCommand command);
     void handle(SetColorCommand command);
