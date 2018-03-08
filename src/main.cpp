@@ -14,8 +14,9 @@
 #include "ServerUtil.h"
 #include "CommandService.h"
 #include "LedDriverRev1.h"
+#include "log/LogEntryGeneric.h"
 
-LogService logService;
+LogService logService(LOG_OUT_HTTP);
 FileSystemService fileSystemService(logService);
 JsonService jsonService(fileSystemService);
 ConfigurationService configurationService(jsonService);
@@ -27,7 +28,25 @@ LedDriverRev1 driver;
 
 Thread logDaemon;
 Thread fadeDaemon;
-StaticThreadController<2> threads(&logDaemon, &fadeDaemon);
+Thread networkDaemon;
+StaticThreadController<3> threads(&logDaemon, &fadeDaemon, &networkDaemon);
+
+void handleEcho(std::string message)
+{
+    if (message.find("new") != std::string::npos)  {
+        logService.log(new LogEntryGeneric("thisistherealshit!"));
+    }
+    if (message.find("reset") != std::string::npos) {
+        espService.restart();
+    }
+    if (message.find("format") != std::string::npos) {
+        fileSystemService.format();
+    }
+    if (message.find("readConfig") != std::string::npos) {
+        std::string config = fileSystemService.read("/config.json");
+        logService.log(new LogEntryGeneric(config));
+    }
+}
 
 void logDaemonWrapper() {
     logService.daemon();
@@ -37,56 +56,14 @@ void fadeDaemonWrapper() {
     // driver.fade();
 }
 
-void setup()
-{
-    Serial.begin(9600);
-    delay(100);
-    SPIFFS.begin();
-    wifiService.setup();
-    logService.setWifiService(&wifiService);
-    logService.setEspService(&espService);
-    server.begin();
-
-    logDaemon.setInterval(100);
-    logDaemon.onRun(logDaemonWrapper);
-    fadeDaemon.enabled = false;
-    fadeDaemon.setInterval(0);
-    fadeDaemon.onRun(fadeDaemonWrapper);
-}
-
-void handleEcho(std::string message)
-{
-    if (message == "new")  {
-        Serial.println("thisistherealshit!");
-    }
-    if (message == "reset") {
-        espService.restart();
-    }
-    if (message == "format") {
-        fileSystemService.format();
-    }
-    if (message == "read") {
-        Serial.print("ssid: ");
-        Serial.println(wifiService.getSsid().c_str());
-        Serial.print("key: ");
-        Serial.println(wifiService.getPassword().c_str());
-    }
-    if (message == "readConfig") {
-        std::string config = fileSystemService.read("/config.json");
-        Serial.println(config.c_str());
-    }
-}
-
-void loop()
-{
-    threads.run();
+void networkDaemonWrapper() {
     Message* message = ServerUtil::receive(server);
     if (message) {
         CommandType type = commandService.getType(message->payload[0]);
         switch(type) {
             case CommandType::SetColor:
                 fadeDaemon.enabled = false;
-                driver.parseColors((uint8_t*)message->payload, message->length);
+                driver.parseColors((uint8_t*)(++message->payload), 8);
                 break;
             case CommandType::SetColorFade:
                 fadeDaemon.enabled = true;
@@ -105,4 +82,28 @@ void loop()
 
         delete message;
     }
+}
+
+void setup()
+{
+    // Serial.begin(9600);
+    // delay(100);
+    SPIFFS.begin();
+    wifiService.setup();
+    logService.setWifiService(&wifiService);
+    logService.setEspService(&espService);
+    server.begin();
+
+    logDaemon.setInterval(100);
+    logDaemon.onRun(logDaemonWrapper);
+    fadeDaemon.enabled = false;
+    fadeDaemon.setInterval(0);
+    fadeDaemon.onRun(fadeDaemonWrapper);
+    networkDaemon.setInterval(0);
+    networkDaemon.onRun(networkDaemonWrapper);
+}
+
+void loop()
+{
+    threads.run();
 }

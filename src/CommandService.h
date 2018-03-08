@@ -9,9 +9,10 @@
 #include "JsonService.h"
 
 enum class CommandType {
-    SetColor = 1,
-    SetColorFade = 2,
-    Json = 123
+    SetColor = 0,
+    SetColorFade = 1,
+    Json = 123,
+    Unknown = 255
 };
 
 class CommandService {

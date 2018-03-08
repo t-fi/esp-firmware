@@ -5,7 +5,20 @@
 
 const CommandType CommandService::getType(const char type)
 {
-    return static_cast<CommandType>(type);
+    CommandType commandType;
+
+    switch (type) {
+        case 0:
+            commandType = CommandType::SetColor;
+            break;
+        case 123:
+            commandType = CommandType::Json;
+            break;
+        default:
+            commandType = CommandType::Unknown;
+    }
+
+    return commandType;
 }
 
 void CommandService::handle(const FlashCommand command)

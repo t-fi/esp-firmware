@@ -22,7 +22,8 @@ void LogService::daemon()
     if (this->canSend()) {
         LogEntry* logEntry = this->queue.front();
         logEntry->setMessage(this->espService->getId());
-        logEntry->send();
+        if (this->output & LOG_OUT_HTTP) logEntry->send();
+        if (this->output & LOG_OUT_SERIAL) Serial.println(logEntry->message.c_str());
         this->queue.pop();
         delete logEntry;
     }
